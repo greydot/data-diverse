@@ -11,6 +11,7 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE RoleAnnotations #-}
@@ -19,11 +20,13 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE ViewPatterns #-}
 
 module Data.Diverse.Which.Internal (
       -- * 'Which' type
       Which(..) -- exporting constructor unsafely!
 
+    , pattern Is
       -- * Single type
       -- ** Construction
     , impossible
@@ -139,6 +142,19 @@ data Which (xs :: [Type]) = Which {-# UNPACK #-} !Int Any
 -- @
 type role Which representational
 
+-- | 'Is' pattern allows pattern matching in a case expression on `Which` type.
+-- Requires than all types in 'Which' are unique.
+-- Example:
+--
+-- @
+-- let w = pick 10 :: Which [Int, String]
+-- in case w of
+--      Is (i :: Int) -> i
+--      _ -> error "Not Int"
+-- @
+pattern Is :: forall x xs. UniqueMember x xs => x -> Which xs
+pattern Is x <- (trial' -> Just x)
+  where Is x = pick x
 ----------------------------------------------
 
 -- | A terminating 'G.Generic' instance for no types encoded as a 'Which '[]'.

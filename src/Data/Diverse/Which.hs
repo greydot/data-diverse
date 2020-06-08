@@ -1,8 +1,10 @@
+{-# LANGUAGE PatternSynonyms #-}
 -- | Re-export Which without the constructor
 module Data.Diverse.Which (
       -- * 'Which' type
       -- | constructor not exported
       Which
+    , pattern Is
       -- * Single type
       -- ** Construction
     , impossible
